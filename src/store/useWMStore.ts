@@ -177,6 +177,7 @@ export const useWMStore = create<WMStore>()(
       partialize: (state) => ({
         scores: state.scores,
       }),
+      skipHydration: true,
     }
   )
 )
