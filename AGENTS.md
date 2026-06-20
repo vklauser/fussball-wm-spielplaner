@@ -26,14 +26,14 @@ npm run dev   # http://localhost:3000
 | `src/lib/data/bracket.ts` | 16 Sechzehntelfinale-Paarungen, BRACKET_FLOW/LOSER_FLOW Maps |
 | `src/lib/logic/standings.ts` | `calculateStandings()` — Punkte, TD, H2H-Tiebreaker |
 | `src/lib/logic/thirdPlace.ts` | Beste 8 Gruppendritte, Bracket-Slot-Zuweisung |
-| `src/store/useWMStore.ts` | Zentraler Store: scores, theme, primaryColor, highlightedTeamId |
+| `src/store/useWMStore.ts` | Zentraler Store: scores, highlightedTeamId |
 | `src/app/api/wm-scores/route.ts` | Server-Route → Proxy zu football-data.org API |
-| `src/components/ui/ThemeProvider.tsx` | Setzt Hintergrund-Gradient dynamisch aus Akzentfarbe |
+| `src/components/ui/ThemeProvider.tsx` | Setzt fixen Radial-Gradient (Blau→Violett) auf `document.body` |
 
 ## Architektur-Entscheidungen
 
 ### Hintergrund-Gradient
-Der Gradient wird in `ThemeProvider.tsx` per JavaScript berechnet und direkt auf `document.body.style.background` gesetzt — **nicht** in `globals.css`. Basis ist die Akzentfarbe (hex → HSL → Gradient). Kein statisches CSS für den Hintergrund schreiben.
+Fixer Radial-Gradient von Blau (`hsl(220,90%,15%)`) über Indigo nach Violett (`hsl(270,65%,4%)`), gesetzt in `ThemeProvider.tsx` via `document.body.style.background` — **nicht** in `globals.css`. Immer Dark-Mode, kein Theme-Toggle. Kein statisches CSS für den Hintergrund schreiben.
 
 ### API-Integration
 Live-Daten kommen über `/api/wm-scores` (Next.js API Route, server-seitig). Der Client ruft nie direkt `football-data.org` auf — das vermeidet CORS-Probleme und hält den API-Key serverseitig. Key: `NEXT_PUBLIC_FOOTBALL_API_KEY` in `.env.local` (Root-Ordner, nicht `src/`).
@@ -43,11 +43,6 @@ Live-Daten kommen über `/api/wm-scores` (Next.js API Route, server-seitig). Der
 
 ### K.O.-Bracket-Auflösung
 `getKOTeamId(slotLabel)` im Store löst Labels wie `"1. Gruppe E"`, `"3. A/B/C/D/F"` oder `"Sieger r32_L1"` rekursiv auf. Kein Ergebnis-State im Bracket — alles wird on-the-fly aus `scores` + `standings` berechnet.
-
-### Theme / Akzentfarbe
-- Dark: Gradient 14%→3% Helligkeit (HSL der Akzentfarbe)
-- Hell: Gradient 30%→8% Helligkeit (weißer Text bleibt lesbar)
-- Tailwind v4: `dark`-Klasse auf `<html>`, gesetzt via `ThemeProvider`
 
 ## Bekannte Einschränkungen
 - K.O.-Unentschieden nicht modelliert (Elfmeterschießen fehlt) — Sieger muss Score-Differenz haben

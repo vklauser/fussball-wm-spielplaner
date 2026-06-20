@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚽ WM 2026 Spielplaner
 
-## Getting Started
+Interaktiver Spielplan und K.O.-Bracket für die Fußball-Weltmeisterschaft 2026 (USA · Mexiko · Kanada).
 
-First, run the development server:
+## Features
+
+- **Gruppenphase** — alle 12 Gruppen mit 72 Spielen, Tabellen, H2H-Tiebreaker nach FIFA-Regeln
+- **K.O.-Runden** — Sechzehntelfinale bis Finale, sektion-basiertes Layout
+- **Live-Daten** — Ergebnisse via [football-data.org](https://www.football-data.org/) API (60s Cache)
+- **Manuelle Eingabe** — Scores per Hand eintragen, überschreiben API-Daten
+- **Team-Highlighting** — Team anklicken → alle Spiele dieses Teams hervorgehoben
+- **Persist** — Eingaben bleiben via localStorage erhalten
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 1. Abhängigkeiten installieren
+npm install
+
+# 2. API-Key eintragen
+cp .env.local.example .env.local
+# .env.local öffnen und NEXT_PUBLIC_FOOTBALL_API_KEY setzen
+# Kostenloser Key: https://www.football-data.org/client/register
+
+# 3. Dev-Server starten
+npm run dev   # → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> Ohne API-Key funktioniert die App vollständig mit manueller Score-Eingabe. Live-Daten bleiben leer.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| | |
+|---|---|
+| **Framework** | Next.js 16 (App Router, TypeScript) |
+| **Styling** | Tailwind CSS 4 |
+| **State** | Zustand + `persist` (localStorage-Key: `wm2026-store`) |
+| **Datum/Zeit** | date-fns + date-fns-tz (Zeitzone: `Europe/Berlin`) |
+| **Icons** | Lucide React + Unicode-Flaggen-Emojis |
 
-## Learn More
+## Projektstruktur
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── api/wm-scores/route.ts   # Proxy → football-data.org
+│   ├── page.tsx                 # Haupt-Seite (Gruppen / K.O.-Runde Tabs)
+│   └── layout.tsx
+├── components/
+│   ├── bracket/                 # KOBracket, BracketMatch
+│   ├── group/                   # GroupGrid, GroupCard, MatchCard, StandingsTable
+│   ├── layout/                  # Header, TabNav
+│   └── ui/                      # TeamBadge, ScoreInput, ThemeProvider
+├── lib/
+│   ├── data/                    # groups.ts (48 Teams, 72 Spiele), bracket.ts (K.O.-Daten)
+│   ├── logic/                   # standings.ts, thirdPlace.ts
+│   └── utils/                   # datetime.ts
+├── store/useWMStore.ts           # Zentraler Zustand
+└── types/index.ts
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Bekannte Einschränkungen
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Elfmeterschießen nicht modelliert — K.O.-Sieger braucht eine Score-Differenz
+- FIFA-Gruppendritte-Mapping (welche Gruppen-Kombination → welcher Bracket-Slot) ist Platzhalter
+- football-data.org Free Tier: max. 10 Requests/Minute
