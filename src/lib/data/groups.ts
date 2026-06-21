@@ -134,7 +134,7 @@ export const GROUP_MATCHES: Match[] = [
   // ── Gruppe H ──
   { id: 'H1', group: 'H', homeTeamId: 'ESP', awayTeamId: 'CPV', date: '2026-06-15T16:00:00Z', venue: 'Estadio Azteca', city: 'Mexiko-Stadt' },
   { id: 'H2', group: 'H', homeTeamId: 'KSA', awayTeamId: 'URU', date: '2026-06-16T14:00:00Z', venue: 'Estadio Azteca', city: 'Mexiko-Stadt' },
-  { id: 'H3', group: 'H', homeTeamId: 'ESP', awayTeamId: 'KSA', date: '2026-06-19T16:00:00Z', venue: 'Estadio Azteca', city: 'Mexiko-Stadt' },
+  { id: 'H3', group: 'H', homeTeamId: 'ESP', awayTeamId: 'KSA', date: '2026-06-21T16:00:00Z', venue: 'Estadio Azteca', city: 'Mexiko-Stadt' },
   { id: 'H4', group: 'H', homeTeamId: 'URU', awayTeamId: 'CPV', date: '2026-06-20T00:00:00Z', venue: 'Estadio Azteca', city: 'Mexiko-Stadt' },
   { id: 'H5', group: 'H', homeTeamId: 'URU', awayTeamId: 'ESP', date: '2026-06-25T19:00:00Z', venue: 'Estadio Azteca', city: 'Mexiko-Stadt' },
   { id: 'H6', group: 'H', homeTeamId: 'CPV', awayTeamId: 'KSA', date: '2026-06-25T19:00:00Z', venue: 'Estadio Azteca', city: 'Mexiko-Stadt' },
