@@ -31,13 +31,13 @@ export function GroupCard({ group }: GroupCardProps) {
   const colorFrom = GROUP_COLORS[group] ?? 'from-slate-500/20'
 
   return (
-    <div className={`rounded-2xl border border-white/10 bg-gradient-to-b ${colorFrom} to-transparent overflow-hidden`}>
+    <div className={`rounded-2xl border border-white/10 bg-linear-to-b ${colorFrom} to-transparent overflow-hidden flex flex-col`}>
       {/* Group header */}
       <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
         <span className="text-lg font-black text-[var(--primary)]">Gruppe {group}</span>
       </div>
 
-      <div className="p-3 space-y-2">
+      <div className="p-3 flex flex-col flex-1">
         {/* Match cards */}
         <div className="space-y-2">
           {matches.map((m) => (
@@ -45,8 +45,10 @@ export function GroupCard({ group }: GroupCardProps) {
           ))}
         </div>
 
-        {/* Standings */}
-        <StandingsTable standings={standings} />
+        {/* Standings — immer am unteren Rand */}
+        <div className="mt-auto pt-2">
+          <StandingsTable standings={standings} />
+        </div>
       </div>
     </div>
   )
