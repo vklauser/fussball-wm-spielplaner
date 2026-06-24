@@ -8,6 +8,7 @@ import { formatMatchDate } from '@/lib/utils/datetime'
 import { useWMStore } from '@/store/useWMStore'
 
 const UPCOMING_WINDOW = 24 * 60 * 60 * 1000 // 24h in ms
+const LIVE_WINDOW = 130 * 60 * 1000           // 130 min — 90 + stoppage/extra time
 
 function timeUntil(isoDate: string, now: number): string {
   const diff = new Date(isoDate).getTime() - now
@@ -36,6 +37,7 @@ export function MatchCard({ match }: MatchCardProps) {
   const matchTime = new Date(matchDate).getTime()
   const diff = matchTime - now
   const isUpcoming = now > 0 && diff > 0 && diff <= UPCOMING_WINDOW
+  const isLive = now > 0 && diff <= 0 && now - matchTime <= LIVE_WINDOW
 
   const isRelated =
     highlightedTeamId === match.homeTeamId || highlightedTeamId === match.awayTeamId
@@ -45,6 +47,8 @@ export function MatchCard({ match }: MatchCardProps) {
       className={`rounded-xl p-3 border transition-all ${
         isRelated
           ? 'border-(--primary) bg-(--primary)/5'
+          : isLive
+          ? 'border-rose-500/60 bg-rose-500/5'
           : isUpcoming
           ? 'border-amber-400/60 bg-amber-400/5'
           : 'border-white/10 bg-white/5 hover:bg-white/8'
@@ -52,10 +56,15 @@ export function MatchCard({ match }: MatchCardProps) {
     >
       {/* Date + venue */}
       <div className="text-xs text-white/40 mb-2 flex items-center justify-between">
-        <span className={isUpcoming ? 'text-amber-300/80' : ''}>
+        <span className={isLive ? 'text-rose-400/80' : isUpcoming ? 'text-amber-300/80' : ''}>
           {formatMatchDate(matchDate)}
         </span>
         <div className="flex items-center gap-1.5">
+          {isLive && (
+            <span className="text-rose-400 font-semibold animate-pulse">
+              🔴 LIVE
+            </span>
+          )}
           {isUpcoming && (
             <span className="text-amber-400 font-semibold">
               ⚡ {timeUntil(matchDate, now)}
