@@ -121,7 +121,7 @@ export async function GET() {
     return NextResponse.json({ error: `openfootball fetch failed: ${res.status}` }, { status: 502 })
   }
 
-  const matches: OpenfootballMatch[] = await res.json()
+  const { matches }: { matches: OpenfootballMatch[] } = await res.json()
 
   const dateFixes: Record<string, string> = {}
   const scores: Record<string, Score> = {}
