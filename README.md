@@ -6,9 +6,10 @@ Interaktiver Spielplan und K.O.-Bracket für die Fußball-Weltmeisterschaft 2026
 
 - **Gruppenphase** — alle 12 Gruppen mit 72 Spielen, Tabellen, H2H-Tiebreaker nach FIFA-Regeln
 - **K.O.-Runden** — Sechzehntelfinale bis Finale, sektion-basiertes Layout
-- **Live-Daten** — Ergebnisse via [football-data.org](https://www.football-data.org/) API (60s Cache)
+- **Live-Daten** — Ergebnisse + korrekte Anstoßzeiten via [openfootball/worldcup.json](https://github.com/openfootball/worldcup.json) (5 min Cache, kein API-Key nötig)
 - **Manuelle Eingabe** — Scores per Hand eintragen, überschreiben API-Daten
 - **Team-Highlighting** — Team anklicken → alle Spiele dieses Teams hervorgehoben
+- **Upcoming/Live-Highlighting** — Spiele in den nächsten 24h (amber), laufende Spiele (grün)
 - **Persist** — Eingaben bleiben via localStorage erhalten
 
 ## Setup
@@ -17,16 +18,11 @@ Interaktiver Spielplan und K.O.-Bracket für die Fußball-Weltmeisterschaft 2026
 # 1. Abhängigkeiten installieren
 npm install
 
-# 2. API-Key eintragen
-cp .env.local.example .env.local
-# .env.local öffnen und NEXT_PUBLIC_FOOTBALL_API_KEY setzen
-# Kostenloser Key: https://www.football-data.org/client/register
-
-# 3. Dev-Server starten
+# 2. Dev-Server starten
 npm run dev   # → http://localhost:3000
 ```
 
-> Ohne API-Key funktioniert die App vollständig mit manueller Score-Eingabe. Live-Daten bleiben leer.
+> Kein API-Key nötig. Live-Daten kommen von openfootball/worldcup.json (öffentliches GitHub-Repo).
 
 ## Stack
 
@@ -43,7 +39,7 @@ npm run dev   # → http://localhost:3000
 ```
 src/
 ├── app/
-│   ├── api/wm-scores/route.ts   # Proxy → football-data.org
+│   ├── api/wm-data/route.ts     # Proxy → openfootball/worldcup.json
 │   ├── page.tsx                 # Haupt-Seite (Gruppen / K.O.-Runde Tabs)
 │   └── layout.tsx
 ├── components/
@@ -63,4 +59,4 @@ src/
 
 - Elfmeterschießen nicht modelliert — K.O.-Sieger braucht eine Score-Differenz
 - FIFA-Gruppendritte-Mapping (welche Gruppen-Kombination → welcher Bracket-Slot) ist Platzhalter
-- football-data.org Free Tier: max. 10 Requests/Minute
+- openfootball ist kein Real-Time-Feed — Live-Daten haben ~5 Minuten Verzögerung

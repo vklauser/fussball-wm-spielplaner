@@ -26,8 +26,8 @@ npm run dev   # http://localhost:3000
 | `src/lib/data/bracket.ts` | 16 Sechzehntelfinale-Paarungen, BRACKET_FLOW/LOSER_FLOW Maps |
 | `src/lib/logic/standings.ts` | `calculateStandings()` — Punkte, TD, H2H-Tiebreaker |
 | `src/lib/logic/thirdPlace.ts` | Beste 8 Gruppendritte, Bracket-Slot-Zuweisung |
-| `src/store/useWMStore.ts` | Zentraler Store: scores, highlightedTeamId |
-| `src/app/api/wm-scores/route.ts` | Server-Route → Proxy zu football-data.org API |
+| `src/store/useWMStore.ts` | Zentraler Store: scores, dateFixes, highlightedTeamId |
+| `src/app/api/wm-data/route.ts` | Server-Route → Proxy zu openfootball/worldcup.json (GitHub raw) |
 | `src/components/ui/ThemeProvider.tsx` | Setzt fixen Radial-Gradient (Blau→Violett) auf `document.body` |
 
 ## Architektur-Entscheidungen
@@ -36,10 +36,10 @@ npm run dev   # http://localhost:3000
 Fixer Radial-Gradient von Blau (`hsl(220,90%,15%)`) über Indigo nach Violett (`hsl(270,65%,4%)`), gesetzt in `ThemeProvider.tsx` via `document.body.style.background` — **nicht** in `globals.css`. Immer Dark-Mode, kein Theme-Toggle. Kein statisches CSS für den Hintergrund schreiben.
 
 ### API-Integration
-Live-Daten kommen über `/api/wm-scores` (Next.js API Route, server-seitig). Der Client ruft nie direkt `football-data.org` auf — das vermeidet CORS-Probleme und hält den API-Key serverseitig. Key: `NEXT_PUBLIC_FOOTBALL_API_KEY` in `.env.local` (Root-Ordner, nicht `src/`).
+Live-Daten kommen über `/api/wm-data` (Next.js API Route, server-seitig). Die Route fetcht `openfootball/worldcup.json` von GitHub raw, mappt Teamnamen auf FIFA-Codes, parst lokale Anstoßzeiten (z.B. `"13:00 UTC-6"`) zu UTC-ISO-Strings und gibt `{ dateFixes, scores, count }` zurück (5-Minuten-Cache). Kein API-Key nötig.
 
-### Scores im Store
-`scores` ist ein `Record<matchId, { home: number | null, away: number | null }>`. Manuelle Eingaben überschreiben API-Daten. Reset löscht alle Scores und lädt API-Daten neu.
+### Scores und Datumskorrekturen im Store
+`scores` ist ein `Record<matchId, { home: number | null, away: number | null }>`. Manuelle Eingaben überschreiben API-Daten. `dateFixes` ist ein `Record<matchId, string>` mit korrigierten UTC-ISO-Timestamps aus openfootball — `MatchCard` benutzt `dateFixes[match.id] ?? match.date` als effektives Datum. Reset löscht Scores und dateFixes.
 
 ### K.O.-Bracket-Auflösung
 `getKOTeamId(slotLabel)` im Store löst Labels wie `"1. Gruppe E"`, `"3. A/B/C/D/F"` oder `"Sieger r32_L1"` rekursiv auf. Kein Ergebnis-State im Bracket — alles wird on-the-fly aus `scores` + `standings` berechnet.
@@ -47,4 +47,4 @@ Live-Daten kommen über `/api/wm-scores` (Next.js API Route, server-seitig). Der
 ## Bekannte Einschränkungen
 - K.O.-Unentschieden nicht modelliert (Elfmeterschießen fehlt) — Sieger muss Score-Differenz haben
 - FIFA-Gruppendritte-Mapping (welche Gruppen-Kombination → welcher Bracket-Slot) ist Platzhalter; offizielle Tabelle noch nicht veröffentlicht
-- football-data.org Free Tier: max. 10 Requests/Minute; API-Route cached 60s (`next: { revalidate: 60 }`)
+- openfootball/worldcup.json ist kein Real-Time-Feed; API-Route cached 5 Minuten (`next: { revalidate: 300 }`)
