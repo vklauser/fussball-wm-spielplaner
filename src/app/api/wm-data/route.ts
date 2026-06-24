@@ -13,6 +13,7 @@ const TEAM_NAME_TO_ID: Record<string, string> = {
   'Canada': 'CAN',
   'Bosnia-Herzegovina': 'BIH',
   'Bosnia and Herzegovina': 'BIH',
+  'Bosnia & Herzegovina': 'BIH',
   'Qatar': 'QAT',
   'Switzerland': 'SUI',
   // Gruppe C
