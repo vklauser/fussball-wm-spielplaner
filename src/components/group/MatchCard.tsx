@@ -48,7 +48,7 @@ export function MatchCard({ match }: MatchCardProps) {
         isRelated
           ? 'border-(--primary) bg-(--primary)/5'
           : isLive
-          ? 'border-rose-500/60 bg-rose-500/5'
+          ? 'border-emerald-500/60 bg-emerald-500/5'
           : isUpcoming
           ? 'border-amber-400/60 bg-amber-400/5'
           : 'border-white/10 bg-white/5 hover:bg-white/8'
@@ -56,12 +56,12 @@ export function MatchCard({ match }: MatchCardProps) {
     >
       {/* Date + venue */}
       <div className="text-xs text-white/40 mb-2 flex items-center justify-between">
-        <span className={isLive ? 'text-rose-400/80' : isUpcoming ? 'text-amber-300/80' : ''}>
+        <span className={isLive ? 'text-emerald-400/80' : isUpcoming ? 'text-amber-300/80' : ''}>
           {formatMatchDate(matchDate)}
         </span>
         <div className="flex items-center gap-1.5">
           {isLive && (
-            <span className="text-rose-400 font-semibold animate-pulse">
+            <span className="text-emerald-400 font-semibold animate-pulse">
               🔴 LIVE
             </span>
           )}
