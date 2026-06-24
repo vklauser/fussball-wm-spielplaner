@@ -15,6 +15,9 @@ interface WMStore {
   setScore: (matchId: string, side: 'home' | 'away', value: number | null) => void
   resetScores: () => void
 
+  // ── Date fixes from openfootball ──
+  dateFixes: Record<string, string>
+
   // ── Highlighting ──
   highlightedTeamId: string | null
   setHighlightedTeam: (teamId: string | null) => void
@@ -40,6 +43,7 @@ export const useWMStore = create<WMStore>()(
   persist(
     (set, get) => ({
       scores: {},
+      dateFixes: {},
       highlightedTeamId: null,
       apiLoaded: false,
 
@@ -57,7 +61,7 @@ export const useWMStore = create<WMStore>()(
         }))
       },
 
-      resetScores: () => set({ scores: {}, apiLoaded: false }),
+      resetScores: () => set({ scores: {}, dateFixes: {}, apiLoaded: false }),
 
       setHighlightedTeam: (teamId) =>
         set((state) => ({
@@ -148,24 +152,23 @@ export const useWMStore = create<WMStore>()(
 
       loadApiData: async () => {
         try {
-          const res = await fetch('/api/wm-scores')
+          const res = await fetch('/api/wm-data')
           if (!res.ok) {
             const err = await res.json().catch(() => ({}))
-            console.error('wm-scores API error:', err)
+            console.error('wm-data API error:', err)
             return
           }
-          const { scores: apiScores, count } = await res.json()
-          if (!count) return
+          const { scores: apiScores, dateFixes: apiFixes, count } = await res.json()
           // Merge: API fills blanks, manual input wins
           set((state) => {
-            const merged: typeof apiScores = { ...apiScores }
+            const merged: typeof apiScores = { ...(count ? apiScores : {}) }
             for (const [matchId, score] of Object.entries(state.scores)) {
               const s = score as { home: number | null; away: number | null }
               if (s.home != null || s.away != null) {
                 merged[matchId] = s
               }
             }
-            return { scores: merged, apiLoaded: true }
+            return { scores: merged, dateFixes: apiFixes ?? {}, apiLoaded: true }
           })
         } catch (e) {
           console.error('loadApiData failed:', e)
